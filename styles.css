@@ -59,9 +59,11 @@ body::before {
     padding: 30px;
     text-align: center;
     position: relative;
-    perspective: 1000px;
-    height: 100%; /* Or your fixed height (e.g., 800px) */
-    overflow: auto
+    height: 80vh;
+    max-height: 800px;
+    overflow: auto;
+    box-sizing: border-box; /* Includes padding in height calculation */
+    margin: 20px auto; /* Centers container */
 }
 
 .game-container::before {
