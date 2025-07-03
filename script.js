@@ -1,331 +1,280 @@
-// Language data
-const languageData = {
-    en: {
-        gameTitle: "Remember the Hieroglyphs",
-        challengeTitle: "Ancient Memory Challenge",
-        instructions: "Symbols appear for 5 seconds. After they disappear, arrange them in the empty boxes in the same order.",
-        checkBtn: "Check Order",
-        retryBtn: "Retry",
-        nextBtn: "Next",
-        resultText: "⭐ Result:",
-        scoreLabel: "Score",
-        streakLabel: "Streak",
-        levelLabel: "Level",
-        langText: "العربية",
-        levelDisplay: "Level:",
-        correct: "Correct ✅",
-        wrong: "Wrong ❌",
-        symbols: [
-            { char: '𓂀', name: 'Eye of Horus', colorClass: 'hiero-gold' },
-            { char: '𓀾', name: 'Walking Man', colorClass: 'hiero-blue' },
-            { char: '𓂧', name: 'Hand', colorClass: 'hiero-red' },
-            { char: '𓀙', name: 'Kneeling Man', colorClass: 'hiero-green' },
-            { char: '𓂻', name: 'Arm', colorClass: 'hiero-turquoise' },
-            { char: '𓅱', name: 'Quail Chick', colorClass: 'hiero-orange' },
-            { char: '𓆣', name: 'Scarab Beetle', colorClass: 'hiero-gold' },
-            { char: '𓋹', name: 'Ankh', colorClass: 'hiero-blue' },
-            { char: '𓋔', name: 'Sedge Plant', colorClass: 'hiero-green' },
-            { char: '𓏞', name: 'Scribe Tool', colorClass: 'hiero-turquoise' }
-        ]
-    },
-    ar: {
-        gameTitle: "تذكر الهيروغليفيات",
-        challengeTitle: "تحدي الذاكرة المصرية القديمة",
-        instructions: "تظهر الرموز لمدة 5 ثواني. بعد اختفائها، رتبها في المربعات الفارغة بنفس الترتيب.",
-        checkBtn: "التحقق من الترتيب",
-        retryBtn: "إعادة المحاولة",
-        nextBtn: "التالي",
-        resultText: "⭐ النتيجة:",
-        scoreLabel: "النقاط",
-        streakLabel: "التتابع",
-        levelLabel: "المستوى",
-        langText: "English",
-        levelDisplay: "المستوى:",
-        correct: "صحيح ✅",
-        wrong: "خطأ ❌",
-        symbols: [
-            { char: '𓂀', name: 'عين حورس', colorClass: 'hiero-gold' },
-            { char: '𓀾', name: 'رجل يمشي', colorClass: 'hiero-blue' },
-            { char: '𓂧', name: 'يد', colorClass: 'hiero-red' },
-            { char: '𓀙', name: 'رجل راكع', colorClass: 'hiero-green' },
-            { char: '𓂻', name: 'ذراع', colorClass: 'hiero-turquoise' },
-            { char: '𓅱', name: 'كتكوت السمان', colorClass: 'hiero-orange' },
-            { char: '𓆣', name: 'خنفساء الجعران', colorClass: 'hiero-gold' },
-            { char: '𓋹', name: 'عنخ', colorClass: 'hiero-blue' },
-            { char: '𓋔', name: 'نبات السعد', colorClass: 'hiero-green' },
-            { char: '𓏞', name: 'أدوات الكاتب', colorClass: 'hiero-turquoise' }
-        ]
-    }
-};
-
-// Current language
-let currentLang = 'en';
-let hieroglyphs = languageData.en.symbols;
-
-// DOM Elements
-const symbolsDisplay = document.getElementById('symbols-display');
-const answerSlots = document.getElementById('answer-slots');
-const symbolPool = document.getElementById('symbol-pool');
-const checkBtn = document.getElementById('check-btn');
-const retryBtn = document.getElementById('retry-btn');
-const nextBtn = document.getElementById('next-btn');
-const timerElement = document.getElementById('timer');
-const starsElement = document.getElementById('stars');
-const scoreElement = document.getElementById('score');
-const streakElement = document.getElementById('streak');
-const levelElement = document.getElementById('level');
-const langSwitch = document.getElementById('lang-switch');
-const langText = document.getElementById('lang-text');
-const gameTitle = document.getElementById('game-title');
-const challengeTitle = document.getElementById('challenge-title');
-const gameInstructions = document.getElementById('game-instructions');
-const checkText = document.getElementById('check-text');
-const retryText = document.getElementById('retry-text');
-const nextText = document.getElementById('next-text');
-const resultText = document.getElementById('result-text');
-const scoreLabel = document.getElementById('score-label');
-const streakLabel = document.getElementById('streak-label');
-const levelLabel = document.getElementById('level-label');
-const levelDisplay = document.getElementById('level-display');
-
-// Game variables
-let currentSequence = [];
-let userSequence = [];
-let gameStarted = false;
-let timer;
-let timeLeft = 5;
-let score = 0;
-let streak = 0;
-let level = 1;
-let symbolsCount = 4;
-let selectedSymbol = null;
-
-// Initialize game
-function initGame() {
-    generateSequence();
-    displaySymbols();
-    createSymbolPool();
-    resetUserSequence();
-    updateScorePanel();
-    updateStars(3);
-    timeLeft = 5;
-    timerElement.textContent = timeLeft.toString().padStart(2, '0');
-    document.querySelector('.result span:first-child').textContent = languageData[currentLang].resultText;
-}
-
-// Generate random sequence
-function generateSequence() {
-    currentSequence = [];
-    const shuffled = [...hieroglyphs].sort(() => 0.5 - Math.random());
-    currentSequence = shuffled.slice(0, symbolsCount);
-}
-
-// Display symbols for memorization
-function displaySymbols() {
-    symbolsDisplay.innerHTML = '';
-    currentSequence.forEach((symbol, index) => {
-        const symbolElement = document.createElement('div');
-        symbolElement.className = `symbol ${symbol.colorClass}`;
-        symbolElement.textContent = symbol.char;
-        symbolElement.title = symbol.name;
-        symbolElement.style.animationDelay = `${index * 0.1}s`;
-        symbolsDisplay.appendChild(symbolElement);
-    });
+document.addEventListener('DOMContentLoaded', () => {
+    // عناصر DOM
+    const gameBoard = document.getElementById('gameBoard');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const timeDisplay = document.getElementById('time');
+    const movesDisplay = document.getElementById('moves');
+    const winModal = document.getElementById('winModal');
+    const finalTimeDisplay = document.getElementById('finalTime');
+    const finalMovesDisplay = document.getElementById('finalMoves');
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    const bgMusicToggle = document.getElementById('bgMusicToggle');
+    const sfxToggle = document.getElementById('sfxToggle');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const toggleLanguage = document.getElementById('toggleLanguage');
     
-    // Start timer for memorization
-    startTimer();
-}
-
-// Create symbol pool for player selection
-function createSymbolPool() {
-    symbolPool.innerHTML = '';
+    // عناصر الصوت
+    const bgMusic = document.getElementById('bgMusic');
+    const flipSound = document.getElementById('flipSound');
+    const matchSound = document.getElementById('matchSound');
+    const winSound = document.getElementById('winSound');
     
-    // Create extra symbols to increase difficulty
-    const extraSymbolsCount = Math.min(6, hieroglyphs.length - symbolsCount);
-    const allSymbols = [...hieroglyphs];
-    const extraSymbols = allSymbols
-        .filter(symbol => !currentSequence.some(s => s.char === symbol.char))
-        .sort(() => 0.5 - Math.random())
-        .slice(0, extraSymbolsCount);
+    // متغيرات اللعبة
+    let cards = [];
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let moves = 0;
+    let timer = null;
+    let seconds = 0;
+    let isGameStarted = false;
+    let isEnglish = false;
+    let sfxEnabled = true;
     
-    // Combine target symbols with extra symbols
-    const poolSymbols = [...currentSequence, ...extraSymbols];
+    // رموز هيروغليفية
+    const hieroglyphs = ['𓀀', '𓀁', '𓀂', '𓀃', '𓀄', '𓀅', '𓀆', '𓀇'];
     
-    // Shuffle symbols randomly
-    const shuffled = [...poolSymbols].sort(() => 0.5 - Math.random());
-    
-    shuffled.forEach(symbol => {
-        const option = document.createElement('div');
-        option.className = `symbol-option ${symbol.colorClass}`;
-        option.textContent = symbol.char;
-        option.title = symbol.name;
-        option.addEventListener('click', () => {
-            // Highlight selection
-            document.querySelectorAll('.symbol-option').forEach(opt => {
-                opt.style.border = '2px solid var(--gold-primary)';
-            });
-            option.style.border = '3px solid #fff';
-            selectedSymbol = symbol;
-        });
-        symbolPool.appendChild(option);
-    });
-}
-
-// Start the countdown timer
-function startTimer() {
-    clearInterval(timer);
-    timeLeft = 5;
-    timerElement.textContent = timeLeft.toString().padStart(2, '0');
-    
-    timer = setInterval(() => {
-        timeLeft--;
-        timerElement.textContent = timeLeft.toString().padStart(2, '0');
+    // تهيئة اللعبة
+    function initGame() {
+        // إنشاء أزواج البطاقات
+        const cardPairs = [...hieroglyphs, ...hieroglyphs];
         
-        if (timeLeft <= 0) {
+        // خلط البطاقات
+        cards = shuffleArray(cardPairs);
+        
+        // إنشاء لوحة اللعبة
+        renderGameBoard();
+        
+        // إعادة تعيين المتغيرات
+        flippedCards = [];
+        matchedPairs = 0;
+        moves = 0;
+        movesDisplay.textContent = moves;
+        seconds = 0;
+        updateTimerDisplay();
+        isGameStarted = false;
+        
+        // إيقاف المؤقت إذا كان يعمل
+        if (timer) {
             clearInterval(timer);
-            symbolsDisplay.innerHTML = '<div class="symbol">?</div>'.repeat(symbolsCount);
+            timer = null;
         }
-    }, 1000);
-}
-
-// Reset user sequence
-function resetUserSequence() {
-    userSequence = Array(symbolsCount).fill('');
-    selectedSymbol = null;
-    document.querySelectorAll('.answer-slot').forEach(slot => {
-        slot.textContent = '';
-        slot.className = 'answer-slot';
-        slot.dataset.colorClass = '';
-        slot.classList.remove('filled');
-    });
-    document.querySelectorAll('.symbol-option').forEach(opt => {
-        opt.style.border = '2px solid var(--gold-primary)';
-    });
-}
-
-// Handle answer slot clicks
-answerSlots.addEventListener('click', (e) => {
-    if (!e.target.classList.contains('answer-slot') || timeLeft > 0 || !selectedSymbol) return;
-    
-    const slot = e.target;
-    const index = parseInt(slot.dataset.index);
-    
-    slot.textContent = selectedSymbol.char;
-    slot.className = `answer-slot filled ${selectedSymbol.colorClass}`;
-    userSequence[index] = selectedSymbol.char;
-    slot.title = selectedSymbol.name;
-    
-    // Reset selection
-    document.querySelectorAll('.symbol-option').forEach(opt => {
-        opt.style.border = '2px solid var(--gold-primary)';
-    });
-    selectedSymbol = null;
-});
-
-// Update stars display
-function updateStars(count) {
-    starsElement.textContent = '⭐'.repeat(count);
-}
-
-// Check user's answer
-checkBtn.addEventListener('click', () => {
-    if (timeLeft > 0 || userSequence.length !== symbolsCount) return;
-    
-    const isCorrect = userSequence.every((symbol, index) => symbol === currentSequence[index].char);
-    
-    if (isCorrect) {
-        resultText.textContent = `${languageData[currentLang].resultText} ${languageData[currentLang].correct}`;
-        updateStars(5);
-        score += level * 10;
-        streak++;
-        
-        // Level up every 3 correct answers
-        if (streak % 3 === 0 && level < 5) {
-            level++;
-            symbolsCount = Math.min(4 + level - 1, 8);
-            levelDisplay.textContent = `${languageData[currentLang].levelDisplay} ${level}`;
-            levelElement.textContent = level;
-        }
-    } else {
-        resultText.textContent = `${languageData[currentLang].resultText} ${languageData[currentLang].wrong}`;
-        updateStars(1);
-        streak = 0;
     }
     
-    updateScorePanel();
-});
-
-// Update score panel
-function updateScorePanel() {
-    scoreElement.textContent = score;
-    streakElement.textContent = streak;
-    levelElement.textContent = level;
-    levelDisplay.textContent = `${languageData[currentLang].levelDisplay} ${level}`;
-}
-
-// Retry button
-retryBtn.addEventListener('click', initGame);
-
-// Next button
-nextBtn.addEventListener('click', () => {
-    initGame();
-});
-
-// Switch language
-langSwitch.addEventListener('click', () => {
-    currentLang = currentLang === 'en' ? 'ar' : 'en';
-    hieroglyphs = languageData[currentLang].symbols;
-    updateLanguage();
-    initGame();
-});
-
-// Update UI language
-function updateLanguage() {
-    const lang = languageData[currentLang];
-    gameTitle.textContent = lang.gameTitle;
-    challengeTitle.textContent = lang.challengeTitle;
-    gameInstructions.innerHTML = `<p>${lang.instructions}</p>`;
-    checkText.textContent = lang.checkBtn;
-    retryText.textContent = lang.retryBtn;
-    nextText.textContent = lang.nextBtn;
-    resultText.textContent = lang.resultText;
-    scoreLabel.textContent = lang.scoreLabel;
-    streakLabel.textContent = lang.streakLabel;
-    levelLabel.textContent = lang.levelLabel;
-    langText.textContent = lang.langText;
-    levelDisplay.textContent = `${lang.levelDisplay} ${level}`;
-    
-    // Update text direction
-    document.body.className = currentLang === 'ar' ? 'lang-arabic' : '';
-}
-
-// Initialize the game on load
-window.addEventListener('load', () => {
-    updateLanguage();
-    initGame();
-    
-    // Prevent zooming on mobile
-    document.addEventListener('gesturestart', function(e) {
-        e.preventDefault();
-    });
-    
-    document.addEventListener('touchmove', function(e) {
-        if(e.scale !== 1) e.preventDefault();
-    }, { passive: false });
-    
-    // Improve touch experience
-    document.querySelectorAll('.symbol-option, .answer-slot, .game-btn').forEach(el => {
-        el.style.touchAction = 'manipulation';
-    });
-    
-    // Add hover effects for interactions
-    const interactiveElements = document.querySelectorAll('button, .answer-slot, .symbol-option');
-    interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            el.style.transform = 'scale(1.05)';
+    // عرض لوحة اللعبة
+    function renderGameBoard() {
+        gameBoard.innerHTML = '';
+        
+        cards.forEach((hieroglyph, index) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.index = index;
+            card.dataset.hieroglyph = hieroglyph;
+            
+            const front = document.createElement('div');
+            front.className = 'front';
+            front.textContent = hieroglyph;
+            
+            const back = document.createElement('div');
+            back.className = 'back';
+            
+            card.appendChild(front);
+            card.appendChild(back);
+            
+            card.addEventListener('click', flipCard);
+            gameBoard.appendChild(card);
         });
-        el.addEventListener('mouseleave', () => {
-            el.style.transform = '';
-        });
+    }
+    
+    // قلب البطاقة
+    function flipCard() {
+        // لا تسمح بقلب أكثر من بطاقتين أو بطاقة مقلوبة بالفعل أو متطابقة
+        if (flippedCards.length >= 2 || this.classList.contains('flipped') || this.classList.contains('matched') || !isGameStarted) {
+            return;
+        }
+        
+        // تشغيل صوت قلب البطاقة
+        if (sfxEnabled) {
+            flipSound.currentTime = 0;
+            flipSound.play();
+        }
+        
+        this.classList.add('flipped');
+        flippedCards.push(this);
+        
+        // التحقق من التطابق عند قلب بطاقتين
+        if (flippedCards.length === 2) {
+            moves++;
+            movesDisplay.textContent = moves;
+            checkForMatch();
+        }
+    }
+    
+    // التحقق من تطابق البطاقات
+    function checkForMatch() {
+        const [card1, card2] = flippedCards;
+        const hieroglyph1 = card1.dataset.hieroglyph;
+        const hieroglyph2 = card2.dataset.hieroglyph;
+        
+        if (hieroglyph1 === hieroglyph2) {
+            // تطابق ناجح
+            matchedPairs++;
+            
+            // تشغيل صوت التطابق
+            if (sfxEnabled) {
+                matchSound.currentTime = 0;
+                matchSound.play();
+            }
+            
+            card1.classList.add('matched');
+            card2.classList.add('matched');
+            card1.removeEventListener('click', flipCard);
+            card2.removeEventListener('click', flipCard);
+            
+            // التحقق من فوز اللاعب
+            if (matchedPairs === hieroglyphs.length) {
+                endGame();
+            }
+        } else {
+            // لا يوجد تطابق - إعادة البطاقات بعد تأخير
+            setTimeout(() => {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+            }, 1000);
+        }
+        
+        // إعادة تعيين البطاقات المقلوبة
+        setTimeout(() => {
+            flippedCards = [];
+        }, 1000);
+    }
+    
+    // بدء اللعبة
+    function startGame() {
+        if (!isGameStarted) {
+            isGameStarted = true;
+            startBtn.disabled = true;
+            timer = setInterval(() => {
+                seconds++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+    }
+    
+    // إنهاء اللعبة
+    function endGame() {
+        clearInterval(timer);
+        
+        // تشغيل صوت الفوز
+        if (sfxEnabled) {
+            winSound.currentTime = 0;
+            winSound.play();
+        }
+        
+        // عرض نافذة الفوز
+        finalTimeDisplay.textContent = formatTime(seconds);
+        finalMovesDisplay.textContent = moves;
+        winModal.style.display = 'flex';
+    }
+    
+    // تحديث عرض المؤقت
+    function updateTimerDisplay() {
+        timeDisplay.textContent = formatTime(seconds);
+    }
+    
+    // تنسيق الوقت
+    function formatTime(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    // خلط المصفوفة
+    function shuffleArray(array) {
+        const newArray = [...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        }
+        return newArray;
+    }
+    
+    // تبديل اللغة
+    function toggleGameLanguage() {
+        isEnglish = !isEnglish;
+        
+        if (isEnglish) {
+            document.title = "Hieroglyph Memory Game";
+            document.querySelector('h1').textContent = "Hieroglyph Memory Game";
+            startBtn.textContent = "Start Game";
+            restartBtn.textContent = "Restart";
+            document.querySelector('.timer').innerHTML = 'Time: <span id="time">00:00</span>';
+            document.querySelector('.moves').innerHTML = 'Moves: <span id="moves">0</span>';
+            bgMusicToggle.textContent = "Toggle Music";
+            sfxToggle.textContent = "Toggle SFX";
+            volumeControl.querySelector('label').textContent = "Volume:";
+            toggleLanguage.textContent = "العربية/English";
+            
+            if (winModal.style.display === 'flex') {
+                document.querySelector('#winModal h2').textContent = "Congratulations! You Won!";
+                document.querySelector('#winModal p:nth-of-type(1)').innerHTML = 'Final Time: <span id="finalTime"></span>';
+                document.querySelector('#winModal p:nth-of-type(2)').innerHTML = 'Moves: <span id="finalMoves"></span>';
+                playAgainBtn.textContent = "Play Again";
+            }
+        } else {
+            document.title = "لعبة الذاكرة الهيروغليفية";
+            document.querySelector('h1').textContent = "لعبة الذاكرة الهيروغليفية";
+            startBtn.textContent = "بدء اللعبة";
+            restartBtn.textContent = "إعادة تشغيل";
+            document.querySelector('.timer').innerHTML = 'الوقت: <span id="time">00:00</span>';
+            document.querySelector('.moves').innerHTML = 'الحركات: <span id="moves">0</span>';
+            bgMusicToggle.textContent = "تشغيل/إيقاف الموسيقى";
+            sfxToggle.textContent = "تشغيل/إيقاف المؤثرات";
+            volumeControl.querySelector('label').textContent = "الصوت:";
+            toggleLanguage.textContent = "English/العربية";
+            
+            if (winModal.style.display === 'flex') {
+                document.querySelector('#winModal h2').textContent = "تهانينا! لقد فزت!";
+                document.querySelector('#winModal p:nth-of-type(1)').innerHTML = 'الوقت النهائي: <span id="finalTime"></span>';
+                document.querySelector('#winModal p:nth-of-type(2)').innerHTML = 'عدد الحركات: <span id="finalMoves"></span>';
+                playAgainBtn.textContent = "العب مرة أخرى";
+            }
+        }
+    }
+    
+    // التحكم في الصوت
+    function updateVolume() {
+        const volume = volumeSlider.value;
+        bgMusic.volume = volume;
+        flipSound.volume = volume;
+        matchSound.volume = volume;
+        winSound.volume = volume;
+    }
+    
+    // استماع للأحداث
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', initGame);
+    playAgainBtn.addEventListener('click', () => {
+        winModal.style.display = 'none';
+        initGame();
     });
+    
+    bgMusicToggle.addEventListener('click', () => {
+        if (bgMusic.paused) {
+            bgMusic.play();
+        } else {
+            bgMusic.pause();
+        }
+    });
+    
+    sfxToggle.addEventListener('click', () => {
+        sfxEnabled = !sfxEnabled;
+    });
+    
+    volumeSlider.addEventListener('input', updateVolume);
+    toggleLanguage.addEventListener('click', toggleGameLanguage);
+    
+    // تهيئة اللعبة عند التحميل
+    initGame();
+    updateVolume();
 });
