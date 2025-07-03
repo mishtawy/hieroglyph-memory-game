@@ -23,7 +23,7 @@
     --hiero-orange: #FFA500;
 }
 
-body {
+html, body {
     background: linear-gradient(135deg, var(--dark-blue), #0c1620);
     color: var(--papyrus);
     min-height: 100vh;
@@ -34,7 +34,7 @@ body {
     position: relative;
     margin: 0;
     padding: 0;
-    overflow: auto;
+    overflow: scroll;
 }
 
 body::before {
@@ -297,10 +297,6 @@ body::before {
     margin: 30px 0 20px;
     flex-wrap: wrap;
 }
-html {
-  scroll-behavior: smooth;
-}
-
 .game-btn {
     background: linear-gradient(to bottom, var(--gold-primary), var(--gold-secondary));
     color: var(--dark-blue);
