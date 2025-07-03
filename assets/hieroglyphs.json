@@ -1,0 +1,52 @@
+[
+  {
+    "char": "𓂀",
+    "name": "Eye of Horus",
+    "colorClass": "hiero-gold"
+  },
+  {
+    "char": "𓀾",
+    "name": "Walking Man",
+    "colorClass": "hiero-blue"
+  },
+  {
+    "char": "𓂧",
+    "name": "Hand",
+    "colorClass": "hiero-red"
+  },
+  {
+    "char": "𓀙",
+    "name": "Kneeling Man",
+    "colorClass": "hiero-green"
+  },
+  {
+    "char": "𓂻",
+    "name": "Arm",
+    "colorClass": "hiero-turquoise"
+  },
+  {
+    "char": "𓅱",
+    "name": "Quail Chick",
+    "colorClass": "hiero-orange"
+  },
+  {
+    "char": "𓆣",
+    "name": "Scarab Beetle",
+    "colorClass": "hiero-gold"
+  },
+  {
+    "char": "𓋹",
+    "name": "Ankh",
+    "colorClass": "hiero-blue"
+  },
+  {
+    "char": "𓋔",
+    "name": "Sedge Plant",
+    "colorClass": "hiero-green"
+  },
+  {
+    "char": "𓏞",
+    "name": "Scribe Tool",
+    "colorClass": "hiero-turquoise"
+  }
+]
