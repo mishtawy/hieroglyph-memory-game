@@ -32,9 +32,7 @@ body {
     align-items: center;
     padding: 20px;
     position: relative;
-    margin: 0;
-    padding: 0;
-    overflow: scroll;
+    overflow: auto; /* Changed from hidden */
 }
 
 body::before {
@@ -59,11 +57,11 @@ body::before {
     padding: 30px;
     text-align: center;
     position: relative;
-    height: 80vh;
+    overflow: auto; /* Changed from hidden */
+    perspective: 1000px;
+    height: 90vh;
     max-height: 800px;
-    overflow: auto;
-    box-sizing: border-box; /* Includes padding in height calculation */
-    margin: 20px auto; /* Centers container */
+    min-height: 500px;
 }
 
 .game-container::before {
