@@ -23,7 +23,7 @@
     --hiero-orange: #FFA500;
 }
 
-html, body {
+body {
     background: linear-gradient(135deg, var(--dark-blue), #0c1620);
     color: var(--papyrus);
     min-height: 100vh;
