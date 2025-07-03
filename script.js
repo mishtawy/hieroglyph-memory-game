@@ -1,525 +1,331 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Cairo', sans-serif;
-    -webkit-tap-highlight-color: transparent;
+// Language data
+const languageData = {
+    en: {
+        gameTitle: "Remember the Hieroglyphs",
+        challengeTitle: "Ancient Memory Challenge",
+        instructions: "Symbols appear for 5 seconds. After they disappear, arrange them in the empty boxes in the same order.",
+        checkBtn: "Check Order",
+        retryBtn: "Retry",
+        nextBtn: "Next",
+        resultText: "⭐ Result:",
+        scoreLabel: "Score",
+        streakLabel: "Streak",
+        levelLabel: "Level",
+        langText: "العربية",
+        levelDisplay: "Level:",
+        correct: "Correct ✅",
+        wrong: "Wrong ❌",
+        symbols: [
+            { char: '𓂀', name: 'Eye of Horus', colorClass: 'hiero-gold' },
+            { char: '𓀾', name: 'Walking Man', colorClass: 'hiero-blue' },
+            { char: '𓂧', name: 'Hand', colorClass: 'hiero-red' },
+            { char: '𓀙', name: 'Kneeling Man', colorClass: 'hiero-green' },
+            { char: '𓂻', name: 'Arm', colorClass: 'hiero-turquoise' },
+            { char: '𓅱', name: 'Quail Chick', colorClass: 'hiero-orange' },
+            { char: '𓆣', name: 'Scarab Beetle', colorClass: 'hiero-gold' },
+            { char: '𓋹', name: 'Ankh', colorClass: 'hiero-blue' },
+            { char: '𓋔', name: 'Sedge Plant', colorClass: 'hiero-green' },
+            { char: '𓏞', name: 'Scribe Tool', colorClass: 'hiero-turquoise' }
+        ]
+    },
+    ar: {
+        gameTitle: "تذكر الهيروغليفيات",
+        challengeTitle: "تحدي الذاكرة المصرية القديمة",
+        instructions: "تظهر الرموز لمدة 5 ثواني. بعد اختفائها، رتبها في المربعات الفارغة بنفس الترتيب.",
+        checkBtn: "التحقق من الترتيب",
+        retryBtn: "إعادة المحاولة",
+        nextBtn: "التالي",
+        resultText: "⭐ النتيجة:",
+        scoreLabel: "النقاط",
+        streakLabel: "التتابع",
+        levelLabel: "المستوى",
+        langText: "English",
+        levelDisplay: "المستوى:",
+        correct: "صحيح ✅",
+        wrong: "خطأ ❌",
+        symbols: [
+            { char: '𓂀', name: 'عين حورس', colorClass: 'hiero-gold' },
+            { char: '𓀾', name: 'رجل يمشي', colorClass: 'hiero-blue' },
+            { char: '𓂧', name: 'يد', colorClass: 'hiero-red' },
+            { char: '𓀙', name: 'رجل راكع', colorClass: 'hiero-green' },
+            { char: '𓂻', name: 'ذراع', colorClass: 'hiero-turquoise' },
+            { char: '𓅱', name: 'كتكوت السمان', colorClass: 'hiero-orange' },
+            { char: '𓆣', name: 'خنفساء الجعران', colorClass: 'hiero-gold' },
+            { char: '𓋹', name: 'عنخ', colorClass: 'hiero-blue' },
+            { char: '𓋔', name: 'نبات السعد', colorClass: 'hiero-green' },
+            { char: '𓏞', name: 'أدوات الكاتب', colorClass: 'hiero-turquoise' }
+        ]
+    }
+};
+
+// Current language
+let currentLang = 'en';
+let hieroglyphs = languageData.en.symbols;
+
+// DOM Elements
+const symbolsDisplay = document.getElementById('symbols-display');
+const answerSlots = document.getElementById('answer-slots');
+const symbolPool = document.getElementById('symbol-pool');
+const checkBtn = document.getElementById('check-btn');
+const retryBtn = document.getElementById('retry-btn');
+const nextBtn = document.getElementById('next-btn');
+const timerElement = document.getElementById('timer');
+const starsElement = document.getElementById('stars');
+const scoreElement = document.getElementById('score');
+const streakElement = document.getElementById('streak');
+const levelElement = document.getElementById('level');
+const langSwitch = document.getElementById('lang-switch');
+const langText = document.getElementById('lang-text');
+const gameTitle = document.getElementById('game-title');
+const challengeTitle = document.getElementById('challenge-title');
+const gameInstructions = document.getElementById('game-instructions');
+const checkText = document.getElementById('check-text');
+const retryText = document.getElementById('retry-text');
+const nextText = document.getElementById('next-text');
+const resultText = document.getElementById('result-text');
+const scoreLabel = document.getElementById('score-label');
+const streakLabel = document.getElementById('streak-label');
+const levelLabel = document.getElementById('level-label');
+const levelDisplay = document.getElementById('level-display');
+
+// Game variables
+let currentSequence = [];
+let userSequence = [];
+let gameStarted = false;
+let timer;
+let timeLeft = 5;
+let score = 0;
+let streak = 0;
+let level = 1;
+let symbolsCount = 4;
+let selectedSymbol = null;
+
+// Initialize game
+function initGame() {
+    generateSequence();
+    displaySymbols();
+    createSymbolPool();
+    resetUserSequence();
+    updateScorePanel();
+    updateStars(3);
+    timeLeft = 5;
+    timerElement.textContent = timeLeft.toString().padStart(2, '0');
+    document.querySelector('.result span:first-child').textContent = languageData[currentLang].resultText;
 }
 
-:root {
-    --gold-primary: #d4af37;
-    --gold-secondary: #b8860b;
-    --sand: #a78a5f;
-    --dark-blue: #1a2a3a;
-    --nile-blue: #0d5c63;
-    --papyrus: #f0e6d2;
-    --hieroglyph-glow: rgba(212, 175, 55, 0.7);
-    --shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    --transition: all 0.3s ease;
-    --hiero-gold: #FFD700;
-    --hiero-blue: #4169E1;
-    --hiero-red: #CD5C5C;
-    --hiero-green: #2E8B57;
-    --hiero-turquoise: #40E0D0;
-    --hiero-orange: #FFA500;
+// Generate random sequence
+function generateSequence() {
+    currentSequence = [];
+    const shuffled = [...hieroglyphs].sort(() => 0.5 - Math.random());
+    currentSequence = shuffled.slice(0, symbolsCount);
 }
 
-body {
-    background: linear-gradient(135deg, var(--dark-blue), #0c1620);
-    color: var(--papyrus);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-    position: relative;
-    overflow: auto;
+// Display symbols for memorization
+function displaySymbols() {
+    symbolsDisplay.innerHTML = '';
+    currentSequence.forEach((symbol, index) => {
+        const symbolElement = document.createElement('div');
+        symbolElement.className = `symbol ${symbol.colorClass}`;
+        symbolElement.textContent = symbol.char;
+        symbolElement.title = symbol.name;
+        symbolElement.style.animationDelay = `${index * 0.1}s`;
+        symbolsDisplay.appendChild(symbolElement);
+    });
+    
+    // Start timer for memorization
+    startTimer();
 }
 
-body::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M20,20 L80,20 L80,80 L20,80 Z" fill="none" stroke="%23d4af37" stroke-width="0.5" opacity="0.1"/><path d="M30,30 L70,30 L70,70 L30,70 Z" fill="none" stroke="%23d4af37" stroke-width="0.3" opacity="0.1"/></svg>');
-    opacity: 0.1;
-    z-index: -1;
+// Create symbol pool for player selection
+function createSymbolPool() {
+    symbolPool.innerHTML = '';
+    
+    // Create extra symbols to increase difficulty
+    const extraSymbolsCount = Math.min(6, hieroglyphs.length - symbolsCount);
+    const allSymbols = [...hieroglyphs];
+    const extraSymbols = allSymbols
+        .filter(symbol => !currentSequence.some(s => s.char === symbol.char))
+        .sort(() => 0.5 - Math.random())
+        .slice(0, extraSymbolsCount);
+    
+    // Combine target symbols with extra symbols
+    const poolSymbols = [...currentSequence, ...extraSymbols];
+    
+    // Shuffle symbols randomly
+    const shuffled = [...poolSymbols].sort(() => 0.5 - Math.random());
+    
+    shuffled.forEach(symbol => {
+        const option = document.createElement('div');
+        option.className = `symbol-option ${symbol.colorClass}`;
+        option.textContent = symbol.char;
+        option.title = symbol.name;
+        option.addEventListener('click', () => {
+            // Highlight selection
+            document.querySelectorAll('.symbol-option').forEach(opt => {
+                opt.style.border = '2px solid var(--gold-primary)';
+            });
+            option.style.border = '3px solid #fff';
+            selectedSymbol = symbol;
+        });
+        symbolPool.appendChild(option);
+    });
 }
 
-.game-container {
-    background: rgba(7, 27, 82, 0.85);
-    border: 4px solid var(--gold-primary);
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 0 4px #0a2463;
-    width: 100%;
-    max-width: 900px;
-    padding: 30px;
-    text-align: center;
-    position: relative;
-    overflow: auto;
-    perspective: 1000px;
-    height: auto;
-    min-height: 90vh;
-    max-height: 90vh;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
+// Start the countdown timer
+function startTimer() {
+    clearInterval(timer);
+    timeLeft = 5;
+    timerElement.textContent = timeLeft.toString().padStart(2, '0');
+    
+    timer = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = timeLeft.toString().padStart(2, '0');
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            symbolsDisplay.innerHTML = '<div class="symbol">?</div>'.repeat(symbolsCount);
+        }
+    }, 1000);
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+// Reset user sequence
+function resetUserSequence() {
+    userSequence = Array(symbolsCount).fill('');
+    selectedSymbol = null;
+    document.querySelectorAll('.answer-slot').forEach(slot => {
+        slot.textContent = '';
+        slot.className = 'answer-slot';
+        slot.dataset.colorClass = '';
+        slot.classList.remove('filled');
+    });
+    document.querySelectorAll('.symbol-option').forEach(opt => {
+        opt.style.border = '2px solid var(--gold-primary)';
+    });
 }
 
-::-webkit-scrollbar-thumb {
-    background: var(--gold-primary);
-    border-radius: 4px;
+// Handle answer slot clicks
+answerSlots.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('answer-slot') || timeLeft > 0 || !selectedSymbol) return;
+    
+    const slot = e.target;
+    const index = parseInt(slot.dataset.index);
+    
+    slot.textContent = selectedSymbol.char;
+    slot.className = `answer-slot filled ${selectedSymbol.colorClass}`;
+    userSequence[index] = selectedSymbol.char;
+    slot.title = selectedSymbol.name;
+    
+    // Reset selection
+    document.querySelectorAll('.symbol-option').forEach(opt => {
+        opt.style.border = '2px solid var(--gold-primary)';
+    });
+    selectedSymbol = null;
+});
+
+// Update stars display
+function updateStars(count) {
+    starsElement.textContent = '⭐'.repeat(count);
 }
 
-.game-container {
-    scrollbar-width: thin;
-    scrollbar-color: var(--gold-primary) transparent;
-}
-
-.game-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 30%, rgba(72, 209, 204, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(72, 209, 204, 0.15) 0%, transparent 40%);
-    pointer-events: none;
-}
-
-.game-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid var(--gold-primary);
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.logo-icon {
-    font-size: 2.5rem;
-    color: var(--gold-primary);
-    animation: pulse 3s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-.logo-text {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 2.2rem;
-    font-weight: bold;
-    background: linear-gradient(to right, var(--gold-primary), var(--sand));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 2px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.controls-container {
-    display: flex;
-    gap: 15px;
-}
-
-.level-language-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(10, 36, 99, 0.7);
-    padding: 8px 15px;
-    border-radius: 50px;
-    border: 2px solid var(--gold-primary);
-}
-
-.level-indicator {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: bold;
-    color: var(--gold-primary);
-    font-size: 1rem;
-    padding-right: 10px;
-    border-right: 1px solid var(--gold-primary);
-}
-
-.language-switcher {
-    background: linear-gradient(to bottom, var(--gold-primary), var(--gold-secondary));
-    color: var(--dark-blue);
-    border: none;
-    border-radius: 50px;
-    padding: 8px 20px;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-}
-
-.language-switcher:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
-}
-
-.game-title {
-    font-family: 'Cinzel Decorative', serif;
-    background: linear-gradient(to right, var(--gold-primary), var(--sand));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 2rem;
-    margin-bottom: 25px;
-    padding-bottom: 10px;
-    letter-spacing: 1px;
-}
-
-.instructions {
-    background: rgba(10, 36, 99, 0.7);
-    border: 2px solid var(--gold-primary);
-    border-radius: 10px;
-    padding: 15px;
-    margin: 20px 0;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    text-align: center;
-}
-
-.timer-container {
-    background: linear-gradient(to bottom, #1e2761, #0a2463);
-    color: var(--gold-primary);
-    padding: 15px;
-    font-size: 1.8rem;
-    border-radius: 50px;
-    margin: 20px auto;
-    width: 160px;
-    letter-spacing: 3px;
-    border: 3px solid var(--gold-primary);
-    box-shadow: 0 0 15px rgba(72, 209, 204, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-}
-
-.game-area {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
-    margin: 30px 0;
-}
-
-.symbols-display {
-    background: rgba(10, 36, 99, 0.7);
-    border: 3px solid var(--gold-primary);
-    border-radius: 12px;
-    padding: 25px;
-    min-height: 220px;
-    min-width: 300px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-.symbol {
-    background: rgba(26, 42, 108, 0.9);
-    width: 70px;
-    height: 70px;
-    font-size: 2.8rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    border: 3px solid var(--gold-primary);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-    transition: transform 0.3s;
-    animation: symbolAppear 0.5s ease-out;
-}
-
-@keyframes symbolAppear {
-    0% { transform: scale(0); opacity: 0; }
-    70% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); }
-}
-
-/* Colorful hieroglyph classes */
-.hiero-gold { color: var(--hiero-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
-.hiero-blue { color: var(--hiero-blue); text-shadow: 0 0 10px rgba(65, 105, 225, 0.7); }
-.hiero-red { color: var(--hiero-red); text-shadow: 0 0 10px rgba(205, 92, 92, 0.7); }
-.hiero-green { color: var(--hiero-green); text-shadow: 0 0 10px rgba(46, 139, 87, 0.7); }
-.hiero-turquoise { color: var(--hiero-turquoise); text-shadow: 0 0 10px rgba(64, 224, 208, 0.7); }
-.hiero-orange { color: var(--hiero-orange); text-shadow: 0 0 10px rgba(255, 165, 0, 0.7); }
-
-.answer-area {
-    background: rgba(10, 36, 99, 0.7);
-    border: 3px solid var(--gold-primary);
-    border-radius: 12px;
-    padding: 25px;
-    min-width: 300px;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-.answer-slots {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-}
-
-.answer-slot {
-    background: rgba(26, 42, 108, 0.9);
-    width: 70px;
-    height: 70px;
-    border: 3px dashed var(--gold-primary);
-    border-radius: 10px;
-    font-size: 2.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    color: var(--gold-primary);
-}
-
-.answer-slot.filled {
-    background: rgba(10, 36, 99, 0.9);
-    border: 3px solid var(--gold-primary);
-}
-
-.symbol-pool {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-}
-
-.symbol-option {
-    background: rgba(26, 42, 108, 0.9);
-    width: 60px;
-    height: 60px;
-    font-size: 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    border: 2px solid var(--gold-primary);
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.symbol-option:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
-}
-
-.game-controls {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    margin: 30px 0 20px;
-    flex-wrap: wrap;
-}
-
-.game-btn {
-    background: linear-gradient(to bottom, var(--gold-primary), var(--gold-secondary));
-    color: var(--dark-blue);
-    border: none;
-    border-radius: 50px;
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: var(--transition);
-    min-width: 180px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.game-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(72, 209, 204, 0.6);
-}
-
-.result {
-    background: linear-gradient(to right, #0a2463, #1e2761);
-    border-radius: 10px;
-    padding: 20px;
-    margin: 25px 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    border: 3px solid var(--gold-primary);
-}
-
-.stars {
-    color: #ffd700;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
-    font-size: 2rem;
-    letter-spacing: 10px;
-}
-
-.score-panel {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-    background: rgba(10, 36, 99, 0.5);
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid var(--gold-primary);
-}
-
-.score-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.score-value {
-    font-size: 2rem;
-    font-weight: bold;
-    color: var(--gold-primary);
-}
-
-.score-label {
-    font-size: 1rem;
-    color: var(--sand);
-}
-
-.hieroglyph-bg {
-    position: absolute;
-    font-size: 10rem;
-    color: rgba(72, 209, 204, 0.1);
-    pointer-events: none;
-    z-index: 0;
-}
-
-.bg1 {
-    top: 50px;
-    left: 50px;
-}
-
-.bg2 {
-    bottom: 50px;
-    right: 50px;
-    transform: rotate(180deg);
-}
-
-.lang-arabic {
-    direction: rtl;
-    font-family: 'Cairo', sans-serif;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-        align-items: flex-start;
+// Check user's answer
+checkBtn.addEventListener('click', () => {
+    if (timeLeft > 0 || userSequence.length !== symbolsCount) return;
+    
+    const isCorrect = userSequence.every((symbol, index) => symbol === currentSequence[index].char);
+    
+    if (isCorrect) {
+        resultText.textContent = `${languageData[currentLang].resultText} ${languageData[currentLang].correct}`;
+        updateStars(5);
+        score += level * 10;
+        streak++;
+        
+        // Level up every 3 correct answers
+        if (streak % 3 === 0 && level < 5) {
+            level++;
+            symbolsCount = Math.min(4 + level - 1, 8);
+            levelDisplay.textContent = `${languageData[currentLang].levelDisplay} ${level}`;
+            levelElement.textContent = level;
+        }
+    } else {
+        resultText.textContent = `${languageData[currentLang].resultText} ${languageData[currentLang].wrong}`;
+        updateStars(1);
+        streak = 0;
     }
     
-    .game-container {
-        height: auto;
-        min-height: 95vh;
-        max-height: 95vh;
-        padding: 15px;
-    }
-    
-    .header {
-        flex-direction: column;
-        gap: 15px;
-    }
+    updateScorePanel();
+});
 
-    .level-language-group {
-        padding: 6px 12px;
-        margin-top: 10px;
-    }
-
-    .level-indicator {
-        font-size: 0.9rem;
-        padding-right: 8px;
-    }
-
-    .language-switcher {
-        padding: 6px 12px;
-        font-size: 0.9rem;
-    }
-    
-    .symbol, .answer-slot {
-        width: 55px;
-        height: 55px;
-        font-size: 2.2rem;
-    }
-    
-    .symbol-option {
-        width: 45px;
-        height: 45px;
-        font-size: 1.7rem;
-    }
-    
-    .symbols-display, .answer-area {
-        padding: 15px;
-        gap: 10px;
-        min-width: auto;
-        width: 100%;
-    }
-    
-    .game-area {
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    .answer-slots {
-        gap: 10px;
-    }
-    
-    .game-btn {
-        min-width: 150px;
-        padding: 12px 20px;
-        font-size: 1.1rem;
-    }
-    
-    .game-title {
-        font-size: 1.6rem;
-    }
-    
-    .logo-text {
-        font-size: 1.8rem;
-    }
+// Update score panel
+function updateScorePanel() {
+    scoreElement.textContent = score;
+    streakElement.textContent = streak;
+    levelElement.textContent = level;
+    levelDisplay.textContent = `${languageData[currentLang].levelDisplay} ${level}`;
 }
+
+// Retry button
+retryBtn.addEventListener('click', initGame);
+
+// Next button
+nextBtn.addEventListener('click', () => {
+    initGame();
+});
+
+// Switch language
+langSwitch.addEventListener('click', () => {
+    currentLang = currentLang === 'en' ? 'ar' : 'en';
+    hieroglyphs = languageData[currentLang].symbols;
+    updateLanguage();
+    initGame();
+});
+
+// Update UI language
+function updateLanguage() {
+    const lang = languageData[currentLang];
+    gameTitle.textContent = lang.gameTitle;
+    challengeTitle.textContent = lang.challengeTitle;
+    gameInstructions.innerHTML = `<p>${lang.instructions}</p>`;
+    checkText.textContent = lang.checkBtn;
+    retryText.textContent = lang.retryBtn;
+    nextText.textContent = lang.nextBtn;
+    resultText.textContent = lang.resultText;
+    scoreLabel.textContent = lang.scoreLabel;
+    streakLabel.textContent = lang.streakLabel;
+    levelLabel.textContent = lang.levelLabel;
+    langText.textContent = lang.langText;
+    levelDisplay.textContent = `${lang.levelDisplay} ${level}`;
+    
+    // Update text direction
+    document.body.className = currentLang === 'ar' ? 'lang-arabic' : '';
+}
+
+// Initialize the game on load
+window.addEventListener('load', () => {
+    updateLanguage();
+    initGame();
+    
+    // Prevent zooming on mobile
+    document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+    });
+    
+    document.addEventListener('touchmove', function(e) {
+        if(e.scale !== 1) e.preventDefault();
+    }, { passive: false });
+    
+    // Improve touch experience
+    document.querySelectorAll('.symbol-option, .answer-slot, .game-btn').forEach(el => {
+        el.style.touchAction = 'manipulation';
+    });
+    
+    // Add hover effects for interactions
+    const interactiveElements = document.querySelectorAll('button, .answer-slot, .symbol-option');
+    interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            el.style.transform = 'scale(1.05)';
+        });
+        el.addEventListener('mouseleave', () => {
+            el.style.transform = '';
+        });
+    });
+});
