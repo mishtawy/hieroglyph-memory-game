@@ -1,104 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ancient Hieroglyphs Memory Game</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الذاكرة الهيروغليفية</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="game-container">
-        <div class="hieroglyph-bg bg1">𓆣</div>
-        <div class="hieroglyph-bg bg2">𓆣</div>
+        <h1>لعبة الذاكرة الهيروغليفية</h1>
         
-        <div class="header">
-            <div class="logo-container">
-                <div class="logo-icon">𓋔</div>
-                <div class="logo-text" id="game-title">Remember the Hieroglyphs</div>
-            </div>
-            <div class="controls-container">
-                <div class="level-language-group">
-                    <div class="level-indicator">
-                        <i class="fas fa-crown" style="color: var(--gold-primary);"></i>
-                        <span id="level-display">Level 1</span>
-                    </div>
-                    <button class="language-switcher" id="lang-switch">
-                        <i class="fas fa-language"></i>
-                        <span id="lang-text">العربية</span>
-                    </button>
+        <div class="controls-container">
+            <div class="sound-controls">
+                <button id="bgMusicToggle" class="sound-btn">تشغيل/إيقاف الموسيقى</button>
+                <button id="sfxToggle" class="sound-btn">تشغيل/إيقاف المؤثرات</button>
+                <div class="volume-control">
+                    <label for="volumeSlider">الصوت:</label>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.7">
                 </div>
+            </div>
+            
+            <div class="language-controls">
+                <button id="toggleLanguage" class="lang-btn">English/العربية</button>
             </div>
         </div>
         
-        <div class="game-content">
-            <div class="game-title" id="challenge-title">Ancient Memory Challenge</div>
-            
-            <div class="instructions" id="game-instructions">
-                <p>Symbols appear for 5 seconds. After they disappear, arrange them in the empty boxes in the same order.</p>
-            </div>
-            
-            <div class="timer-container">
-                <i class="fas fa-clock"></i>
-                <span id="timer">05</span>
-            </div>
-            
-            <div class="game-area">
-                <div class="symbols-display" id="symbols-display">
-                    <!-- Symbols will be added dynamically -->
-                </div>
-                
-                <div class="answer-area">
-                    <div class="answer-slots" id="answer-slots">
-                        <div class="answer-slot" data-index="0"></div>
-                        <div class="answer-slot" data-index="1"></div>
-                        <div class="answer-slot" data-index="2"></div>
-                        <div class="answer-slot" data-index="3"></div>
-                    </div>
-                    
-                    <div class="symbol-pool" id="symbol-pool">
-                        <!-- Symbol options will be added dynamically -->
-                    </div>
-                </div>
-            </div>
-            
-            <div class="game-controls">
-                <button class="game-btn" id="check-btn">
-                    <i class="fas fa-check-circle"></i>
-                    <span id="check-text">Check Order</span>
-                </button>
-                <button class="game-btn" id="retry-btn">
-                    <i class="fas fa-redo"></i>
-                    <span id="retry-text">Retry</span>
-                </button>
-                <button class="game-btn" id="next-btn">
-                    <i class="fas fa-arrow-right"></i>
-                    <span id="next-text">Next</span>
-                </button>
-            </div>
-            
-            <div class="result">
-                <span id="result-text">⭐ Result:</span>
-                <span class="stars" id="stars">⭐⭐⭐</span>
-            </div>
-            
-            <div class="score-panel">
-                <div class="score-item">
-                    <div class="score-value" id="score">0</div>
-                    <div class="score-label" id="score-label">Score</div>
-                </div>
-                <div class="score-item">
-                    <div class="score-value" id="streak">0</div>
-                    <div class="score-label" id="streak-label">Streak</div>
-                </div>
-                <div class="score-item">
-                    <div class="score-value" id="level">1</div>
-                    <div class="score-label" id="level-label">Level</div>
-                </div>
-            </div>
+        <div class="game-info">
+            <div class="timer">الوقت: <span id="time">00:00</span></div>
+            <div class="moves">الحركات: <span id="moves">0</span></div>
+        </div>
+        
+        <div class="game-board" id="gameBoard"></div>
+        
+        <div class="game-actions">
+            <button id="startBtn" class="action-btn">بدء اللعبة</button>
+            <button id="restartBtn" class="action-btn">إعادة تشغيل</button>
         </div>
     </div>
+    
+    <div class="modal" id="winModal">
+        <div class="modal-content">
+            <h2>تهانينا! لقد فزت!</h2>
+            <p>الوقت النهائي: <span id="finalTime"></span></p>
+            <p>عدد الحركات: <span id="finalMoves"></span></p>
+            <button id="playAgainBtn">العب مرة أخرى</button>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="sounds/background-music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="flipSound">
+        <source src="sounds/card-flip.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="matchSound">
+        <source src="sounds/match-success.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="winSound">
+        <source src="sounds/win-game.mp3" type="audio/mpeg">
+    </audio>
 
     <script src="script.js"></script>
 </body>
