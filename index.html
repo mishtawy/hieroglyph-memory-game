@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة تذكر الهيروغليفيات - تحدي الذاكرة المصرية القديمة</title>
+    <meta name="description" content="لعبة تذكر الهيروغليفيات المصرية القديمة، اختبر ذاكرتك وقدرتك على تذكر الرموز التاريخية">
+    <meta name="keywords" content="لعبة, ذاكرة, مصر, هيروغليفيات, أثرية, تاريخ">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="hieroglyph-bg bg1">𓆣</div>
+        <div class="hieroglyph-bg bg2">𓆣</div>
+        
+        <div class="level-indicator">
+            <i class="fas fa-crown"></i> <span id="level-display">المستوى: 1</span>
+        </div>
+        
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">𓋔</div>
+                <div class="logo-text" id="game-title">تذكر الهيروغليفيات</div>
+            </div>
+            <div class="controls-container">
+                <button class="language-switcher" id="lang-switch">
+                    <i class="fas fa-language"></i>
+                    <span id="lang-text">English</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="game-title" id="challenge-title">تحدي الذاكرة المصرية القديمة</div>
+        
+        <div class="instructions" id="game-instructions">
+            <p>تظهر الرموز لمدة 5 ثواني. بعد اختفائها، رتبها في المربعات الفارغة بنفس الترتيب.</p>
+        </div>
+        
+        <div class="timer-container">
+            <i class="fas fa-clock"></i>
+            <span id="timer">05</span>
+        </div>
+        
+        <div class="game-area">
+            <div class="symbols-display" id="symbols-display">
+                <!-- الرموز تضاف ديناميكيًا -->
+            </div>
+            
+            <div class="answer-area">
+                <div class="answer-slots" id="answer-slots">
+                    <div class="answer-slot" data-index="0"></div>
+                    <div class="answer-slot" data-index="1"></div>
+                    <div class="answer-slot" data-index="2"></div>
+                    <div class="answer-slot" data-index="3"></div>
+                </div>
+                
+                <div class="symbol-pool" id="symbol-pool">
+                    <!-- خيارات الرموز تضاف ديناميكيًا -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <button class="game-btn" id="check-btn">
+                <i class="fas fa-check-circle"></i>
+                <span id="check-text">التحقق من الترتيب</span>
+            </button>
+            <button class="game-btn" id="retry-btn">
+                <i class="fas fa-redo"></i>
+                <span id="retry-text">إعادة المحاولة</span>
+            </button>
+            <button class="game-btn" id="next-btn">
+                <i class="fas fa-arrow-right"></i>
+                <span id="next-text">التالي</span>
+            </button>
+        </div>
+        
+        <div class="result">
+            <span id="result-text">⭐ النتيجة:</span>
+            <span class="stars" id="stars">⭐⭐⭐</span>
+        </div>
+        
+        <div class="score-panel">
+            <div class="score-item">
+                <div class="score-value" id="score">0</div>
+                <div class="score-label" id="score-label">النقاط</div>
+            </div>
+            <div class="score-item">
+                <div class="score-value" id="streak">0</div>
+                <div class="score-label" id="streak-label">التتابع</div>
+            </div>
+            <div class="score-item">
+                <div class="score-value" id="level">1</div>
+                <div class="score-label" id="level-label">المستوى</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
